@@ -1,0 +1,6 @@
+empty browser request
+b'GET / HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: max-age=0\r\nsec-ch-ua: "Chromium";v="110", "Not A(Brand";v="24", "Brave";v="110"\r\nsec-ch-ua-mobile: ?0\r\nsec-ch-ua-platform: "Windows"\r\nUpgrade-Insecure-Requests: 1\r\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36\r\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8\r\nSec-GPC: 1\r\nSec-Fetch-Site: cross-site\r\nSec-Fetch-Mode: navigate\r\nSec-Fetch-User: ?1\r\nSec-Fetch-Dest: document\r\nAccept-Encoding: gzip, deflate, br\r\nAccept-Language: en-US,en;q=0.9,hu-HU;q=0.8,hu;q=0.7\r\nCookie: wordpress_test_cookie=WP%20Cookie%20check; PHPSESSID=8765192bb66ebca42aaf908529de140f\r\nIf-None-Match: "2d-432a5e4a73a80"\r\nIf-Modified-Since: Mon, 11 Jun 2007 18:53:14 GMT\r\n\r\n'
+data
+b'POST /home?data=sealion HTTP/1.1\r\nContent-Type: application/json\r\nUser-Agent: PostmanRuntime/7.31.0\r\nAccept: */*\r\nPostman-Token: f959e7d9-15e9-423a-b7c5-73e642b6fb4e\r\nHost: localhost:8080\r\nAccept-Encoding: gzip, deflate, br\r\nConnection: keep-alive\r\nContent-Length: 17\r\nCookie: Cookie_1=value\r\n\r\n{"data":"Kansas"}'
+
+

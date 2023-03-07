@@ -34,7 +34,6 @@ class ServerInstanceHandler(InstanceHandler):
                     break
             except socket.error:
                 break
-            print(list(response))
         return response
     def forward_message(self, message: str) -> list:
         self.connect_server_socket()

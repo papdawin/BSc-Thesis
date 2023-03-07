@@ -1,0 +1,18 @@
+{
+  "request_types_to_check": [
+    "GET",
+    "POST",
+    "UPDATE",
+    "DELETE"
+  ],
+  "protect_against": [
+    "XSS",
+    "SQLi",
+    "Prototype_pollution"
+  ],
+  "parts_of_request_to_check": {
+    "status_line": "True",
+    "cookie": "True",
+    "body": "True"
+  }
+}

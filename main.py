@@ -1,19 +1,24 @@
 import socket
-import threading
-from threading import current_thread
-import socketserver
-import sys
-from instanceHandler import ServerInstanceHandler, ClientInstanceHandler
+from ListBasedAnalyzer import ListBasedAnalyzer
+from instanceHandler import ServerInstanceHandler
+import json
 
 class WAFProxy:
     def __init__(self, start_address: str, end_address: str, start_port: int, end_port: int, message_size: int):
         print("Initializing WAF...")
+        self.init_analyzer()
+        self.analyzer = None
         self.start_address = start_address
         self.start_port = start_port
         self.message_size = message_size
         self.server_instance = ServerInstanceHandler(end_address, end_port, message_size)
         self.client_socket = None
         self.server_instance.connect_server_socket()
+    def init_analyzer(self):
+        with open('config.json', 'r') as f:
+            config = json.load(f)
+            self.analyzer = ListBasedAnalyzer()
+            self.analyzer.set_options(config)
     def connect_client_to_proxy(self) -> socket.socket:
         self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.client_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -30,6 +35,8 @@ class WAFProxy:
         while True:
             try:
                 data_from_client = client_conn.recv(message_size)
+                analyzer = ListBasedAnalyzer()
+                analyzer.analyze_parts(data_from_client)
             except socket.error:
                 break
             data_from_server = self.server_instance.forward_message(data_from_client.decode())
@@ -39,7 +46,7 @@ class WAFProxy:
         while True:
             client_conn = self.connect_client_to_proxy()
             client_conn.settimeout(1.0)
-            self.handle_client(client_conn,self.message_size)
+            self.handle_client(client_conn, self.message_size)
             # threading.Thread(target=self.handle_client, args=[client_conn, self.message_size]).start()
 
 
