@@ -10,7 +10,7 @@ class ListBasedAnalyzer:
         self.config = {}
         self.rules = {}
         self.set_ruleset()
-        print("[Initialized Analyzer]")
+        # print("[Initialized Analyzer]")
     def set_options(self, config):
         self.config = config
     def set_ruleset(self):
