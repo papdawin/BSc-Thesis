@@ -2,6 +2,7 @@ import socket
 import sys
 import threading
 from listBasedAnalyzer import ListBasedAnalyzer
+from IPChecker import InvalidIPException
 import pydnsbl
 
 class InstanceHandler:
@@ -66,12 +67,11 @@ class ServerInstanceHandler(InstanceHandler, metaclass=SingletonMeta):
         self.socket.sendall(message.encode())
         return self.receive()
 
-
 class ClientInstanceHandler(InstanceHandler):
-    def __init__(self, address, port, message_size):
+    def __init__(self, address, port, message_size, ip_checker):
         super().__init__(address, port, message_size)
         self.client_conn = None
-        self.ip_checker = pydnsbl.DNSBLIpChecker()
+        self.ip_checker = ip_checker
         self.connect_client_socket()
     def connect_client_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -79,12 +79,9 @@ class ClientInstanceHandler(InstanceHandler):
         self.socket.bind((self.address, self.port))
         self.socket.listen(1)
         self.client_conn, addr = self.socket.accept()
-
-        res = self.ip_checker.check(addr[0])
-        print(res.blacklisted)
-        print(res.detected_by)
-        if 
-        self.close_socket()
+        if not self.ip_checker.IP_is_safe(addr):
+            self.client_conn.close()
+            raise InvalidIPException()
         self.client_conn.settimeout(3)
     def forward_comm(self, server_instance, analyzer: ListBasedAnalyzer):
         while True:

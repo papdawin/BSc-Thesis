@@ -1,14 +1,14 @@
-import socket
-import threading
 from threading import Thread
 from listBasedAnalyzer import ListBasedAnalyzer
 from instanceHandler import ServerInstanceHandler, ClientInstanceHandler
+from IPChecker import IPChecker, InvalidIPException
 import json
 
 class WAFProxy:
     def __init__(self, start_address: str, end_address: str, start_port: int, end_port: int, message_size: int, config_location: str = 'config.json'):
         self.analyzer = None
         self.init_analyzer(config_location)
+        self.IPChecker = IPChecker()
         self.start_address = start_address
         self.start_port = start_port
         self.message_size = message_size
@@ -23,9 +23,11 @@ class WAFProxy:
         client_connection.forward_comm(self.server_instance, self.analyzer)
     def handle_communication(self):
         while True:
-            client_connection = ClientInstanceHandler(self.start_address,self.start_port, self.message_size)
-            Thread(target=self.client_proxy_connection, args=[client_connection]).start()
-
+            try:
+                client_connection = ClientInstanceHandler(self.start_address, self.start_port, self.message_size, self.IPChecker)
+                Thread(target=self.client_proxy_connection, args=[client_connection]).start()
+            except InvalidIPException as ex:
+                print(ex)
 
 if __name__ == '__main__':
     p = WAFProxy("", "127.0.0.1", 80, 3000, 2**12, 'config.json')
