@@ -1,9 +1,7 @@
+from Analysis import *
 import socket
 import sys
 import threading
-from listBasedAnalyzer import ListBasedAnalyzer
-from IPChecker import InvalidIPException
-import pydnsbl
 
 class InstanceHandler:
     def __init__(self, address, port, message_size):
@@ -16,7 +14,7 @@ class InstanceHandler:
         if self.socket:
             self.socket.close()
 
-class SingletonMeta(type): # Thread-safe
+class SingletonMeta(type):
     _instances = {}
     _lock = threading.Lock()
     def __call__(cls, *args, **kwargs):
@@ -60,7 +58,7 @@ class ServerInstanceHandler(InstanceHandler, metaclass=SingletonMeta):
     def forward_message(self, message: str, start_port) -> bytes:
         self.connect_server_socket()
         if not start_port == 80:
-            message.replace(start_port, str(self.port))
+            message.replace(str(start_port), str(self.port))
         else:
             host = (message.partition("Host: ")[2]).partition("\r\n")[0]
             message = message.replace(host, f"{host}:{self.port}")
@@ -68,10 +66,9 @@ class ServerInstanceHandler(InstanceHandler, metaclass=SingletonMeta):
         return self.receive()
 
 class ClientInstanceHandler(InstanceHandler):
-    def __init__(self, address, port, message_size, ip_checker):
+    def __init__(self, address, port, message_size):
         super().__init__(address, port, message_size)
         self.client_conn = None
-        self.ip_checker = ip_checker
         self.connect_client_socket()
     def connect_client_socket(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -79,19 +76,17 @@ class ClientInstanceHandler(InstanceHandler):
         self.socket.bind((self.address, self.port))
         self.socket.listen(1)
         self.client_conn, addr = self.socket.accept()
-        if not self.ip_checker.IP_is_safe(addr):
+        if not is_IP_safe(addr):
             self.client_conn.close()
             raise InvalidIPException()
         self.client_conn.settimeout(3)
-    def forward_comm(self, server_instance, analyzer: ListBasedAnalyzer):
+    def forward_comm(self, server_instance):
         while True:
             try:
                 data_from_client = self.client_conn.recv(self.message_size)
-                parsed = analyzer.format_request(data_from_client)
-                request_is_secure = analyzer.analyze_parts(parsed)
-                print(f"Request is secure: {request_is_secure}")
-                if not request_is_secure:
-                    break
+                is_safe = analyze_request(data_from_client)
+                if not is_safe:
+                    break  # hangs up, sends no response
             except socket.error:
                 break
             data_from_server = server_instance.forward_message(data_from_client.decode(), self.port)

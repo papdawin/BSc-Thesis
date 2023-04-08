@@ -1,6 +1,5 @@
-import email
 import re
-from io import StringIO
+
 
 
 class ListBasedAnalyzer:
@@ -8,12 +7,11 @@ class ListBasedAnalyzer:
         self.config = {}
         self.rules = {}
         self.set_ruleset()
-        # print("[Initialized Analyzer]")
     def set_options(self, config):
         self.config = config
     def set_ruleset(self):
-        self.rules["XSS"] = re.compile("(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*[\x3E|&gt]+", re.I)
-        self.rules["SQLi"] = re.compile("('(''|[^'])*').*;.*(\b(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?)\b)", re.I)
+        self.rules["XSS"] = re.compile("(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*(>)+", re.I)
+        self.rules["SQLi"] = re.compile("('('|[^'])*)*.*(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))", re.I)
         self.rules["Prototype_pollution"] = re.compile("{(\S|\s)*__proto__", re.I)
         # TODO: add more rules
     def is_secure(self, text, territory) -> bool:
@@ -32,21 +30,6 @@ class ListBasedAnalyzer:
         if self.config["parts_of_request_to_check"]["body"] and not self.is_secure(request["body"], "body"):
             return False
         return True
-    def format_request(self, data: bytes) -> dict:
-        decoded = data.decode()
-        status_line, request = decoded.split('\r\n', 1)
-        headers, body = request.split('\r\n\r\n', 1)
-        message = email.message_from_file(StringIO(headers))
-        request = dict(message.items())
-        request["body"] = body
-        request["status_line"] = status_line
-        return request
-
-    # with open('config.json', 'r') as f:
-    #     config = json.load(f)
-    #     analyzer = ListBasedAnalyzer()
-    #     analyzer.set_options(config)
-    #     print(analyzer.analyze_parts(request))
 
 
 # check_request(b'GET / HTTP/1.1\r\nHost: localhost:8080\r\nConnection: keep-alive\r\nCache-Control: '

@@ -1,0 +1,26 @@
+# WAF config options
+[base]
+accept_from = ""
+local_IP = "127.0.0.1"
+in_port = 8080
+out_port = 80
+message_size = 4096
+
+[analysis]
+  [analysis.request]
+  type = ["GET","POST","UPDATE","DELETE"]
+  part = [
+    {status_line = true},
+    {cookie = true},
+    {body = true}]
+
+[ruleset]
+use_manual = true
+manual_rules = [
+  {XSS = '(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*(>)+'},
+  {SQLi = '([\x27]([\x27]|[^[\x27]])*)*.*(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))'},
+  {Prototype_pollution = '{(\S|\s)*__proto__'}]
+use_ML = false
+ml_rules = ""
+
+[logging]

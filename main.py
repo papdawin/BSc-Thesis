@@ -1,34 +1,40 @@
+import socket
 from threading import Thread
-from listBasedAnalyzer import ListBasedAnalyzer
-from instanceHandler import ServerInstanceHandler, ClientInstanceHandler
-from IPChecker import IPChecker, InvalidIPException
+from Analysis import *
+from Proxy import *
+from Data import config
 import json
 
 class WAFProxy:
-    def __init__(self, start_address: str, end_address: str, start_port: int, end_port: int, message_size: int, config_location: str = 'config.json'):
-        self.analyzer = None
-        self.init_analyzer(config_location)
-        self.IPChecker = IPChecker()
+    def __init__(self, start_address: str, end_address: str, start_port: int, end_port: int, message_size: int):
         self.start_address = start_address
         self.start_port = start_port
         self.message_size = message_size
         self.server_instance = ServerInstanceHandler(end_address, end_port, message_size)
-    def init_analyzer(self, config_location):
-        with open(config_location, 'r') as f:
-            config = json.load(f)
-            self.analyzer = ListBasedAnalyzer()
-            self.analyzer.set_options(config)
-            self.analyzer.set_ruleset()
     def client_proxy_connection(self, client_connection: ClientInstanceHandler) -> None:
-        client_connection.forward_comm(self.server_instance, self.analyzer)
+        client_connection.forward_comm(self.server_instance)
     def handle_communication(self):
         while True:
             try:
-                client_connection = ClientInstanceHandler(self.start_address, self.start_port, self.message_size, self.IPChecker)
+                client_connection = ClientInstanceHandler(self.start_address, self.start_port, self.message_size)
                 Thread(target=self.client_proxy_connection, args=[client_connection]).start()
-            except InvalidIPException as ex:
-                print(ex)
+            except InvalidIPException:
+                pass
+
 
 if __name__ == '__main__':
-    p = WAFProxy("", "127.0.0.1", 80, 3000, 2**12, 'config.json')
+    # x = config['analysis']['request']
+    #
+    # print(len(x))
+    # c = json.loads(x)
+    # print(len(c))
+    # print(str(config['base']['accept_from']))
+    # print(str(config['base']['in_port']))
+    p = WAFProxy(
+        start_address=config['base']['accept_from'],
+        end_address=config['base']['local_IP'],
+        start_port=int(config['base']['in_port']),
+        end_port=int(config['base']['out_port']),
+        message_size=2**12
+    )
     p.handle_communication()
