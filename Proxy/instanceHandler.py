@@ -68,6 +68,7 @@ class ServerInstanceHandler(InstanceHandler, metaclass=SingletonMeta):
 class ClientInstanceHandler(InstanceHandler):
     def __init__(self, address, port, message_size):
         super().__init__(address, port, message_size)
+        self.address = None
         self.client_conn = None
         self.connect_client_socket()
     def connect_client_socket(self):
@@ -75,8 +76,8 @@ class ClientInstanceHandler(InstanceHandler):
         self.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.socket.bind((self.address, self.port))
         self.socket.listen(1)
-        self.client_conn, addr = self.socket.accept()
-        if not is_IP_safe(addr):
+        self.client_conn, self.address = self.socket.accept()
+        if not is_IP_safe(self.address):
             self.client_conn.close()
             raise InvalidIPException()
         self.client_conn.settimeout(3)
@@ -84,7 +85,7 @@ class ClientInstanceHandler(InstanceHandler):
         while True:
             try:
                 data_from_client = self.client_conn.recv(self.message_size)
-                is_safe = analyze_request(data_from_client)
+                is_safe = analyze_request(data_from_client, self.address)
                 if not is_safe:
                     break  # hangs up, sends no response
             except socket.error:

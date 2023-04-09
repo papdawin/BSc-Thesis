@@ -2,6 +2,7 @@ import re
 
 
 
+
 class ListBasedAnalyzer:
     def __init__(self):
         self.config = {}
