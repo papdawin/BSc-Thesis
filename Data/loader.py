@@ -5,4 +5,3 @@ import toml
 config = configparser.ConfigParser()
 tml = toml.load('config.toml')
 config.read_dict(tml)
-

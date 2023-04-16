@@ -68,7 +68,6 @@ class ServerInstanceHandler(InstanceHandler, metaclass=SingletonMeta):
 class ClientInstanceHandler(InstanceHandler):
     def __init__(self, address, port, message_size):
         super().__init__(address, port, message_size)
-        self.address = None
         self.client_conn = None
         self.connect_client_socket()
     def connect_client_socket(self):

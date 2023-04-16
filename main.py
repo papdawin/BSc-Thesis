@@ -23,13 +23,6 @@ class WAFProxy:
 
 
 if __name__ == '__main__':
-    # x = config['analysis']['request']
-    #
-    # print(len(x))
-    # c = json.loads(x)
-    # print(len(c))
-    # print(str(config['base']['accept_from']))
-    # print(str(config['base']['in_port']))
     p = WAFProxy(
         start_address=config['base']['accept_from'],
         end_address=config['base']['local_IP'],
@@ -38,3 +31,4 @@ if __name__ == '__main__':
         message_size=2**12
     )
     p.handle_communication()
+

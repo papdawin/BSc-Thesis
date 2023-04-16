@@ -1,25 +1,23 @@
 # WAF config options
 [base]
-accept_from = ""
+accept_from = "127.0.0.1"
 local_IP = "127.0.0.1"
 in_port = 8080
 out_port = 80
 message_size = 4096
 
 [analysis]
+block_malicious_IP = true
   [analysis.request]
   type = ["GET","POST","UPDATE","DELETE"]
-  part = [
-    {status_line = true},
-    {cookie = true},
-    {body = true}]
+  part = ["status_line","Cookie","body"]
 
 [ruleset]
-use_manual = true
+use_manual = false
 manual_rules = [
-  {XSS = '(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*(>)+'},
-  {SQLi = '([\x27]([\x27]|[^[\x27]])*)*.*(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))'},
-  {Prototype_pollution = '{(\S|\s)*__proto__'}]
+  {name = "XSS", regex = '(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*(>)+'},
+  {name = "SQLi", regex = '([\x27]([\x27]|[^[\x27]])*)*.*(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))'},
+  {name = "Prototype_pollution", regex = '{(\S|\s)*__proto__'}]
 
 use_ML = false
 ml_rules = ""
