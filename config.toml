@@ -21,7 +21,7 @@ block_malicious_IP = true
 use_manual = true
 manual_rules = [
   {name = "XSS", regex = '(<)+(\s)*(script|body|img|image|irame|input|link|table|div|object|svg|html|iframe|video|audio|frameset)*.*(>)+'},
-  {name = "SQLi", regex = '([\x27]([\x27]|[^[\x27]])*)*.*(ALTER|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))'},
-  {name = "Prototype_pollution", regex = '{(\S|\s)*__proto__'}]
+  {name = "SQLi", regex = '([\x27]([\x27]|[^[\x27]])*)*.*(OR|AND|ALTER|WHERE|CREATE|DELETE|DROP|EXEC(UTE)?|INSERT( +INTO)?|MERGE|SELECT|UPDATE|UNION( +ALL)?|SLEEP.(\d*.))'},
+  {name = "Prototype_pollution", regex = '{*(\S|\s)*__proto__|constructor'}]
 
 use_ML = false

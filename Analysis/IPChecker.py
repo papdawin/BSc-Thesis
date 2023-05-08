@@ -75,7 +75,6 @@ def found_IP_online(address):
         return msg
     return None
 
-
 class InvalidIPException(Exception):
     def __init__(self):
         super().__init__("invalid IP provided")
