@@ -2,8 +2,8 @@
 #### Software engineer BSc Thesis
 ###### Veszprém, 2023.05.02
 
-[![en](https://img.shields.io/badge/version-English-blue.svg)](https://github.com/papdawin/thesis/README.md)
-[![hu](https://img.shields.io/badge/version-Hungarian-brown.svg)](https://github.com/papdawin/thesis/README.hu.md)
+[![en](https://img.shields.io/badge/version-English-blue.svg)](https://github.com/papdawin/thesis/blob/master/README.md)
+[![hu](https://img.shields.io/badge/version-Hungarian-brown.svg)](https://github.com/papdawin/thesis/blob/master/README.hu.md)
 
 I chose the development of a website defacement attack detection tool as the topic of my
 thesis, the task of which is to protect the web server from injection attacks. This is also
